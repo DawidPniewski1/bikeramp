@@ -1,13 +1,13 @@
 import { TripsDto } from './types/trips-dto';
-import { Trips } from './types/trips.entity';
 import { TripsService } from './trips.service';
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { getRepository } from 'typeorm';
+import { Body, Controller, Post } from '@nestjs/common';
 
 @Controller('trips')
 export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
   @Post()
-  async addTrip(@Body() add: TripsDto) {}
+  async addTrip(@Body() add: TripsDto) {
+    return await this.tripsService.addTrip(add);
+  }
 }

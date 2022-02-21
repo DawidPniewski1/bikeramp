@@ -1,4 +1,6 @@
+import { TripsDto } from './trips-dto';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { type } from 'os';
 
 @Entity()
 export class Trips {
@@ -13,9 +15,9 @@ export class Trips {
   @Column('decimal', { precision: 6, scale: 2 })
   price: number;
 
-  @Column()
+  @Column({ type: 'date' })
   date: Date;
 
-  @Column()
+  @Column('decimal', { precision: 8, scale: 2 })
   distance: number;
 }
