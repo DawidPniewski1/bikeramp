@@ -1,6 +1,6 @@
+import { DayStats } from './types/stats-monthly';
 import { Controller, Get } from '@nestjs/common';
 import { StatsService } from './stats.service';
-import { StatsMonthly } from './types/stats-monthly';
 import { StatsWeekly } from './types/stats-weekly';
 
 @Controller('stats')
@@ -13,7 +13,7 @@ export class StatsController {
   }
 
   @Get('monthly')
-  async getMonthlyStats(): Promise<StatsMonthly> {
+  async getMonthlyStats(): Promise<DayStats[]> {
     return await this.statsService.getMonthlyStats();
   }
 }

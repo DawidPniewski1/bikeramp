@@ -1,6 +1,6 @@
 import { Trips } from './../trips/types/trips.entity';
-import { getRepository, LessThan, MoreThan } from 'typeorm';
-import { StatsMonthly } from './types/stats-monthly';
+import { getRepository } from 'typeorm';
+import { DayStats } from './types/stats-monthly';
 import { StatsWeekly } from './types/stats-weekly';
 import { Injectable } from '@nestjs/common';
 
@@ -19,8 +19,25 @@ export class StatsService {
       .getRawOne();
   }
 
-  async getMonthlyStats(): Promise<StatsMonthly> {
-    return;
+  async getMonthlyStats(): Promise<DayStats[]> {
+    let x = await getRepository(Trips)
+      .createQueryBuilder()
+      .select('date as day')
+      .addSelect("CONCAT(SUM(distance), 'km') as total_distance")
+      .addSelect("CONCAT(ROUND(AVG(distance), 2), 'km') as avg_ride")
+      .addSelect("CONCAT(ROUND(AVG(price),2), 'PLN') as avg_price")
+      .groupBy('date')
+      .getRawMany();
+
+    x.forEach((element) => {
+      element.day =
+        element.day.toLocaleString('en', { month: 'long' }) +
+        ', ' +
+        element.day.getDate() +
+        this.addTip(element.day.getDate());
+    });
+
+    return x;
   }
 
   dateInRMDFormat(date: Date) {
@@ -37,5 +54,18 @@ export class StatsService {
       month = date.getMonth() + 1;
     }
     return date.getFullYear() + '-' + month + '-' + day;
+  }
+
+  addTip(day: number) {
+    if (day === 1 || day === 21 || day === 31) {
+      return 'st';
+    }
+    if (day === 2 || day === 22) {
+      return 'nd';
+    }
+    if (day === 3 || day === 23) {
+      return 'rd';
+    }
+    return 'th';
   }
 }
