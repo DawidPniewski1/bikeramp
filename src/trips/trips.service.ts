@@ -23,6 +23,9 @@ export class TripsService {
       no_annotations: 1,
     });
 
+    if (add.date.toString() > this.dateNowInRMDFormat()) {
+      throw new BadRequestException('future date?');
+    }
     if (startRes.results.length === 0) {
       throw new BadRequestException('invalid start address');
     }
@@ -44,11 +47,23 @@ export class TripsService {
           Math.cos(φ1) * Math.cos(φ2) * Math.cos(Δλ),
       ) * R;
 
-    // let trip = new Trips();
-    // trip.date = add.date;
-    // trip.start_address = add.start_address;
-    // trip.destination_address =
-
     getRepository(Trips).save({ ...add, distance: d / 1000 });
+  }
+
+  dateNowInRMDFormat() {
+    const now = new Date();
+    let day, month;
+    if (now.getDate() < 10) {
+      day = '0' + now.getDate();
+    } else {
+      day = now.getDate();
+    }
+
+    if (now.getMonth() + 1 < 10) {
+      month = '0' + (now.getMonth() + 1);
+    } else {
+      month = now.getMonth() + 1;
+    }
+    return now.getFullYear() + '-' + month + '-' + day;
   }
 }
